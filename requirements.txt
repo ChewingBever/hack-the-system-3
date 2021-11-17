@@ -1,1 +1,6 @@
 requests-html==0.10.0
+Scrapy
+arrow
+ipdb
+beautifulsoup4
+html5lib
