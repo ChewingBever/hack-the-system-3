@@ -11,15 +11,21 @@ class DummyOtaHotelsSpider(scrapy.Spider):
     # Skeleton implementation
 
     def start_requests(self):
-        base_url = "http://35.233.25.116/sitemap/hotels/Amsterdam/"
-        count = 13
-        urls = [f"{base_url}?page={i}" for i in range(1, count + 1)]
+        # cities = ["Amsterdam", "Brussels", "Paris", "London"]
+        cities = ["Amsterdam"]
+        base_urls = [f"http://35.233.25.116/sitemap/hotels/{city}/" for city in cities]
 
-        for url in urls:
-            yield scrapy.Request(url, callback=self.parse_function)
+        for base_url in base_urls:
+            yield scrapy.Request(base_url, callback=self.parse_count)
 
-    def parse_function(self, response):
-        yield from response.follow_all([res.attrib["href"] for res in response.css("a.hotellink")], callback=self.parse_hotel_page)
+    def parse_count(self, response):
+        count = int(response.css(".pagination").re("Page 1 / ([0-9]+)")[0])
+
+        for i in range(1, count + 1):
+            yield scrapy.Request(f"{response.url.strip('/')}/?page={i}", cookies=response.request.cookies, callback=self.parse_list_page)
+
+    def parse_list_page(self, response):
+        yield from response.follow_all([res.attrib["href"] for res in response.css("a.hotellink")], callback=self.parse_hotel_page, cookies=response.request.cookies)
 
     def parse_hotel_page(self, response):
         hotel_id = response.url.strip("/").split("/")[-1]
@@ -27,13 +33,9 @@ class DummyOtaHotelsSpider(scrapy.Spider):
 
         name_str = card_div.xpath("//h5/text()").get()
         texts = card_div.css(".text-muted::text").getall()
-        address_str = " ".join(texts[:3])
-        coord_str, rate_str = texts[3:]
 
         return {
             "id": hotel_id,
             "name": name_str,
-            "address": address_str,
-            "coord": coord_str,
-            "rate": rate_str
+            "texts": texts,
         }
