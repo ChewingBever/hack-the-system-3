@@ -10,7 +10,12 @@ class DummyOtaHotelsSpider(scrapy.Spider):
     # Skeleton implementation
 
     def start_requests(self):
-        yield scrapy.Request(url='https://www.google.com/', callback=self.parse_function)
+        base_url = "http://35.233.25.116/sitemap/hotels/Amsterdam/"
+        count = 13
+        urls = [f"{base_url}?page={i}" for i in range(1, count + 1)]
+
+        for url in urls:
+            yield scrapy.Request(url, callback=self.parse_function)
 
     def parse_function(self, response):
         yield {"Success": True}
