@@ -1,0 +1,5 @@
+Scrapy
+arrow
+ipdb
+beautifulsoup4
+html5lib

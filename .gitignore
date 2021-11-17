@@ -1,0 +1,4 @@
+*.json
+*.jl
+__pycache__/
+*.py[cod]
