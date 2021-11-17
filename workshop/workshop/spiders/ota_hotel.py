@@ -1,5 +1,6 @@
 import scrapy
 from scrapy.linkextractors import LinkExtractor
+import re
 
 server_location = 'http://35.233.25.116'
 
@@ -35,5 +36,6 @@ class DummyOtaHotelsSpider(scrapy.Spider):
             "name": name_str,
             "address": address_str,
             "coord": coord_str,
-            "rate": rate_str
+            "rate": rate_str,
+            "rooms": re.search(r"\[([0-9]+).*\]", name_str).group(1)
         }
