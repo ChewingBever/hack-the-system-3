@@ -45,5 +45,5 @@ class DummyOtaHotelsSpider(scrapy.Spider):
         return {
             "id": hotel_id,
             "name": name_str,
-            "texts": texts,
+            "texts": texts
         }
